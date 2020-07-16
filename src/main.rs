@@ -65,25 +65,25 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
                 board[(n + board_size - 1) % board_size],           // left
                 board[(n + board_size - board_width - 1) % board_size],
             ) {
-                (true, false, false, true) => "▀",
                 (false, false, false, false) => " ",
-                (false, true, true, false) => "▄",
-                (true, true, true, true) => "█",
-                (false, false, true, true) => "▌",
-                (true, true, false, false) => "▐",
-                (false, false, true, false) => "▖",
-                (false, true, false, false) => "▗",
                 (false, false, false, true) => "▘",
-                (false, true, true, true) => "▙",
+                (false, false, true, false) => "▖",
+                (false, false, true, true) => "▌",
+                (false, true, false, false) => "▗",
                 (false, true, false, true) => "▚",
-                (true, false, true, true) => "▛",
-                (true, true, false, true) => "▜",
+                (false, true, true, false) => "▄",
+                (false, true, true, true) => "▙",
                 (true, false, false, false) => "▝",
+                (true, false, false, true) => "▀",
                 (true, false, true, false) => "▝",
+                (true, false, true, true) => "▛",
+                (true, true, false, false) => "▐",
+                (true, true, false, true) => "▜",
                 (true, true, true, false) => "▟",
+                (true, true, true, true) => "█",
             };
             print!("{}", symbol);
-            if n % board_width == board_width - 1 {
+            if n % board_width == board_width - 1 && n != board_size - 1 {
                 print!("\n");
             }
         }
@@ -92,14 +92,26 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
 }
 
 fn main() {
-    let board_width = 80;
-    let board_height = 40;
-    let board_size = board_width * board_height;
+    use terminal_size::{terminal_size, Height, Width};
 
-    let mut board = create_random_board(board_size);
+    let size = terminal_size();
+    if let Some((Width(w), Height(h))) = size {
+        // HACK: I want to ensure that there are an even number of rows and columns because of the
+        // weird unicode drawing stuff we're doing in `display_board()`, but I also want to be very
+        // careful that we aren't displaying more characters than the terminal actually supports.
+        //
+        // Because of this, I remove one character, round to the nearest even character, and then
+        // multiply by two (because each unicode character is actually displaying two board tiles).
+        let board_width: usize = ((w as f32 - 1.0) / 2.0).floor() as usize * 4;
+        let board_height: usize = ((h as f32 - 1.0) / 2.0).floor() as usize * 4;
+        let board_size = board_width * board_height;
+        let mut board = create_random_board(board_size);
 
-    loop {
-        display_board(&board, board_width, board_height);
-        board = create_next_board(&board, board_width, board_height);
+        loop {
+            display_board(&board, board_width, board_height);
+            board = create_next_board(&board, board_width, board_height);
+        }
+    } else {
+        println!("Unable to get terminal size :(");
     }
 }
