@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 fn get_neighbors(n: usize, board_size: usize, board_width: usize) -> [usize; 8] {
     [
         (n + board_size - board_width) % board_size,     // up
@@ -107,9 +109,17 @@ fn main() {
         let board_size = board_width * board_height;
         let mut board = create_random_board(board_size);
 
+        let mut last_frame = Instant::now();
+
+        let target_fps = 60;
+        let target_pause = 1.0 / target_fps as f32;
+
         loop {
-            display_board(&board, board_width, board_height);
-            board = create_next_board(&board, board_width, board_height);
+            if last_frame.elapsed().as_secs_f32() >= target_pause {
+                display_board(&board, board_width, board_height);
+                last_frame = Instant::now();
+                board = create_next_board(&board, board_width, board_height);
+            }
         }
     } else {
         println!("Unable to get terminal size :(");
