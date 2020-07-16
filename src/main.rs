@@ -54,17 +54,46 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
     let board_size = board_width * board_height;
 
     for n in 0..board_size {
-        print!("{}", if board[n] { "X" } else { " " });
-        if n % board_width == board_width - 1 {
-            print!("\n");
+        if n % (board_width * 2) >= board_width && n % 2 == 1 {
+            // 41
+            // 32 <- 2 is the cell we're currently drawing (board[n])
+            //
+            // See: https://en.wikipedia.org/wiki/Template:Unicode_chart_Block_Elements
+            let symbol = match (
+                board[(n + board_size - board_width) % board_size], // up
+                board[n],                                           // current
+                board[(n + board_size - 1) % board_size],           // left
+                board[(n + board_size - board_width - 1) % board_size],
+            ) {
+                (true, false, false, true) => "▀",
+                (false, false, false, false) => " ",
+                (false, true, true, false) => "▄",
+                (true, true, true, true) => "█",
+                (false, false, true, true) => "▌",
+                (true, true, false, false) => "▐",
+                (false, false, true, false) => "▖",
+                (false, true, false, false) => "▗",
+                (false, false, false, true) => "▘",
+                (false, true, true, true) => "▙",
+                (false, true, false, true) => "▚",
+                (true, false, true, true) => "▛",
+                (true, true, false, true) => "▜",
+                (true, false, false, false) => "▝",
+                (true, false, true, false) => "▝",
+                (true, true, true, false) => "▟",
+            };
+            print!("{}", symbol);
+            if n % board_width == board_width - 1 {
+                print!("\n");
+            }
         }
     }
-    print!("\u{1b}[{}A", board_height);
+    print!("\u{1b}[{}A", board_height / 2);
 }
 
 fn main() {
-    let board_width = 64;
-    let board_height = 32;
+    let board_width = 80;
+    let board_height = 40;
     let board_size = board_width * board_height;
 
     let mut board = create_random_board(board_size);
