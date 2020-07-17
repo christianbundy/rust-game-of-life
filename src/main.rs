@@ -124,7 +124,7 @@ fn main() {
 
         let mut last_frame = Instant::now();
 
-        let target_fps = 60;
+        let target_fps = 30;
         let target_pause = 1.0 / target_fps as f32;
 
         // Since `display_board()` deletes a bunch of lines and then redraws them, we want to start
