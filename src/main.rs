@@ -90,7 +90,7 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
                 (true, true, true, true) => "█",
             };
             buffer.push(symbol);
-            if n % board_width == board_width - 1 && n != board_size - 1 {
+            if n % board_width == board_width - 1 {
                 buffer.push("\n");
             }
         }
@@ -100,7 +100,7 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
 
 fn create_display(board_height: usize) {
     let mut buffer = vec![];
-    for _ in 0..board_height / 2 {
+    for _ in 0..board_height / 2 - 1  {
         buffer.push("\n");
     }
     print!("{}", buffer.join(""));
@@ -117,8 +117,8 @@ fn main() {
         //
         // Because of this, I remove one character, round to the nearest even character, and then
         // multiply by two (because each unicode character is actually displaying two board tiles).
-        let board_width: usize = ((w as f32 - 1.0) / 2.0).floor() as usize * 4;
-        let board_height: usize = ((h as f32 - 1.0) / 2.0).floor() as usize * 4;
+        let board_width: usize = ((w as f32 - 1.5) / 2.0).floor() as usize * 4;
+        let board_height: usize = ((h as f32 - 1.5) / 2.0).floor() as usize * 4;
         let board_size = board_width * board_height;
         let mut board = create_random_board(board_size);
 
