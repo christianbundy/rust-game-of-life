@@ -77,7 +77,7 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
                 (false, true, true, true) => "▙",
                 (true, false, false, false) => "▝",
                 (true, false, false, true) => "▀",
-                (true, false, true, false) => "▝",
+                (true, false, true, false) => "▞",
                 (true, false, true, true) => "▛",
                 (true, true, false, false) => "▐",
                 (true, true, false, true) => "▜",
