@@ -14,42 +14,39 @@ fn get_neighbors(n: usize, board_size: usize, board_width: usize) -> [usize; 8] 
 }
 
 fn create_random_board(board_size: usize) -> Vec<bool> {
-    let mut board = vec![false; board_size];
-    for n in 0..board.len() {
-        if rand::random() {
-            board[n] = true;
-        }
-    }
-
-    return board;
+    (0..board_size)
+        .map(|_| rand::random())
+        .collect()
 }
 
 fn create_next_board(board: &Vec<bool>, board_width: usize, board_height: usize) -> Vec<bool> {
     let board_size = board_width * board_height;
-    let mut new_board = vec![false; board_size];
-    for n in 0..board_size {
-        let mut neighbor_count = 0;
-        let neighbors = get_neighbors(n, board_size, board_width);
-        for neighbor_index in 0..8 {
-            if board[neighbors[neighbor_index]] {
-                neighbor_count += 1;
+    (0..board_size)
+        .map(|n|{
+            let neighbors = get_neighbors(n, board_size, board_width);
+
+            let neighbor_count = neighbors
+                .iter()
+                .map(|neighbor| {
+                    if board[*neighbor] {
+                        1
+                    } else {
+                        0
+                    }
+                })
+            .sum();
+
+            // Any live cell with two or three live neighbours survives.
+            // Any dead cell with three live neighbours becomes a live cell.
+            // All other live cells die in the next generation. Similarly, all other dead cells stay dead.
+
+            match (board[n], neighbor_count) {
+                (true, 2) => true,
+                (_,3) => true,
+                _ => false
             }
-        }
-
-        // Any live cell with two or three live neighbours survives.
-        // Any dead cell with three live neighbours becomes a live cell.
-        // All other live cells die in the next generation. Similarly, all other dead cells stay dead.
-
-        if board[n] && neighbor_count == 2 || neighbor_count == 3 {
-            new_board[n] = true;
-        } else if board[n] == false && neighbor_count == 3 {
-            new_board[n] = true
-        } else {
-            new_board[n] = false
-        }
-    }
-
-    return new_board;
+        })
+    .collect()
 }
 
 fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
