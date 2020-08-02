@@ -41,20 +41,12 @@ fn create_next_board(board: &Vec<bool>, board_width: usize, board_height: usize)
         .collect()
 }
 
-fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
+fn display_board(board: &[bool], board_width: usize, board_height: usize) {
     let board_size = board_width * board_height;
 
-    let mut buffer = vec![];
-    for n in 0..board_size {
-        if n % (board_width * 2) >= board_width && n % 2 == 1 {
-            // This is
-            // +-+-+
-            // |4|1|
-            // +-+-+
-            // |3|2| <- 2 is the cell we're currently drawing (board[n])
-            // +-+-+
-            //
-            // See: https://en.wikipedia.org/wiki/Template:Unicode_chart_Block_Elements
+    let buff = (0..board_size)
+        .filter(|n| n % (board_width * 2) >= board_width && n % 2 == 1)
+        .flat_map(|n| {
             let symbol = match (
                 board[(n + board_size - board_width) % board_size], // up
                 board[n],                                           // current
@@ -78,13 +70,15 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
                 (true, true, true, false) => "▟",
                 (true, true, true, true) => "█",
             };
-            buffer.push(symbol);
             if n % board_width == board_width - 1 {
-                buffer.push("\n");
+                vec![symbol, "\n"]
+            } else {
+                vec![symbol]
             }
-        }
-    }
-    print!("\u{1b}[{}A{}", board_height / 2, buffer.join(""));
+        })
+        .collect::<Vec<_>>();
+
+    print!("\u{1b}[{}A{}", board_height / 2, buff.join(""));
 }
 
 fn create_display(board_height: usize) {
@@ -113,7 +107,7 @@ fn main() {
 
         let mut last_frame = Instant::now();
 
-        let target_fps = 30;
+        let target_fps = 240;
         let target_pause = 1.0 / target_fps as f32;
 
         // Since `display_board()` deletes a bunch of lines and then redraws them, we want to start
