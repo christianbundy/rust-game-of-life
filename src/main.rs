@@ -14,27 +14,19 @@ fn get_neighbors(n: usize, board_size: usize, board_width: usize) -> [usize; 8] 
 }
 
 fn create_random_board(board_size: usize) -> Vec<bool> {
-    (0..board_size)
-        .map(|_| rand::random())
-        .collect()
+    (0..board_size).map(|_| rand::random()).collect()
 }
 
 fn create_next_board(board: &Vec<bool>, board_width: usize, board_height: usize) -> Vec<bool> {
     let board_size = board_width * board_height;
     (0..board_size)
-        .map(|n|{
+        .map(|n| {
             let neighbors = get_neighbors(n, board_size, board_width);
 
             let neighbor_count = neighbors
                 .iter()
-                .map(|neighbor| {
-                    if board[*neighbor] {
-                        1
-                    } else {
-                        0
-                    }
-                })
-            .sum();
+                .map(|neighbor| if board[*neighbor] { 1 } else { 0 })
+                .sum();
 
             // Any live cell with two or three live neighbours survives.
             // Any dead cell with three live neighbours becomes a live cell.
@@ -42,11 +34,11 @@ fn create_next_board(board: &Vec<bool>, board_width: usize, board_height: usize)
 
             match (board[n], neighbor_count) {
                 (true, 2) => true,
-                (_,3) => true,
-                _ => false
+                (_, 3) => true,
+                _ => false,
             }
         })
-    .collect()
+        .collect()
 }
 
 fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
@@ -97,7 +89,7 @@ fn display_board(board: &Vec<bool>, board_width: usize, board_height: usize) {
 
 fn create_display(board_height: usize) {
     let mut buffer = vec![];
-    for _ in 0..board_height / 2 - 1  {
+    for _ in 0..board_height / 2 - 1 {
         buffer.push("\n");
     }
     print!("{}", buffer.join(""));
