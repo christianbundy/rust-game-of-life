@@ -46,7 +46,7 @@ fn display_board(board: &[bool], board_width: usize, board_height: usize) {
 
     let buff = (0..board_size)
         .filter(|n| n % (board_width * 2) >= board_width && n % 2 == 1)
-        .flat_map(|n| {
+        .map(|n| {
             let symbol = match (
                 board[(n + board_size - board_width) % board_size], // up
                 board[n],                                           // current
@@ -71,14 +71,14 @@ fn display_board(board: &[bool], board_width: usize, board_height: usize) {
                 (true, true, true, true) => "█",
             };
             if n % board_width == board_width - 1 {
-                vec![symbol, "\n"]
+                format!("{}\n", symbol)
             } else {
-                vec![symbol]
+                format!("{}", symbol)
             }
         })
-        .collect::<Vec<_>>();
+        .collect::<String>();
 
-    print!("\u{1b}[{}A{}", board_height / 2, buff.join(""));
+    print!("\u{1b}[{}A{}", board_height / 2, buff);
 }
 
 fn create_display(board_height: usize) {
